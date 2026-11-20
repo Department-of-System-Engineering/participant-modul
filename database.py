@@ -14,7 +14,7 @@ def get_db():
         database="participant_modul",
         user="postgres",
         password="postgres",
-        host="db",
+        host="participant-db",
         port="5432",
         cursor_factory=psycopg2.extras.RealDictCursor
     )

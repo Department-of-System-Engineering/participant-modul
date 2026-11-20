@@ -10,13 +10,19 @@ services:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     networks:
       - shared-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   participant-backend:
     build: .
     ports:
       - "8090:8090"
     depends_on:
-      - participant-db
+      participant-db:
+        condition: service_healthy
     networks:
       - shared-network
 

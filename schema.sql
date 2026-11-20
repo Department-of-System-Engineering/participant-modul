@@ -3,8 +3,8 @@
 -- 1. Résztvevők tábla
 CREATE TABLE participants (
     participant_pseudonym VARCHAR(225) PRIMARY KEY,
-    created_at DATETIME NOT NULL DEFAULT NOW()
-)
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
 
 -- 2. API kulcsok
 CREATE TABLE api_keys (
@@ -17,7 +17,7 @@ CREATE TABLE api_keys (
 
 -- 3. Demográfiai adatok tábla
 CREATE TABLE demographics (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     participant_pseudonym VARCHAR(255) NOT NULL REFERENCES participants(participant_pseudonym),
     session_ref VARCHAR(255) NOT NULL,
     group_ref VARCHAR(255) NOT NULL,
@@ -30,6 +30,7 @@ CREATE TABLE demographics (
     started_at TIMESTAMP NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMP DEFAULT NULL,
     api_key_id UUID REFERENCES api_keys(id)
-)
+
+);
 
 CREATE INDEX idx_demographics_group_ref ON demographics(group_ref);

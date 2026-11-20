@@ -16,7 +16,7 @@ router = APIRouter(prefix="/demographics", tags=["demographics"])
 async def get_demographic_by_id(id: str):
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM demographics WHERE id = %s", (id))
+        cursor.execute("SELECT * FROM demographics WHERE id = %s", (id,))
         row = cursor.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Demographic not found")
@@ -42,7 +42,7 @@ async def start_demographics(data: StartDemographicsRequest):
         row = cursor.fetchone()
         if row is None:
             raise HTTPException(status_code=500, detail="Failed to create demographics")
-        demographics_id = row[0]
+        demographics_id = row["id"]
         display_url = f"http://localhost:8090/d/{demographics_id}"
         return StartDemographicsResult(
             demographics_id=demographics_id,
