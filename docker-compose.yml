@@ -7,10 +7,12 @@ services:
       POSTGRES_DB: participant_modul
     volumes:
       - participant_postgres_data:/var/lib/postgresql/data
+      # schema.sql is executed automatically on first startup
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     networks:
-      - shared-network
+      - shared-network # Shared network for inter-module communication
     healthcheck:
+      # Wait until PostgreSQL is ready before starting the backend
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
@@ -22,13 +24,20 @@ services:
       - "8090:8090"
     depends_on:
       participant-db:
-        condition: service_healthy
+        condition: service_healthy # Only start after the database passes the healthcheck
     networks:
-      - shared-network
+      - shared-network # Same shared network as the Experiment module
+    environment:
+      # These are read by database.py via os.getenv()
+      POSTGRES_DB: participant_modul
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: participant-db # Docker service name, not localhost
+      POSTGRES_PORT: 5432
 
 networks:
   shared-network:
-    external: true
+    external: true # Created manually with: docker network create shared-network
 
 volumes:
-  participant_postgres_data:
+  participant_postgres_data: # Persists database data between container restarts
